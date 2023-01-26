@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { api } from "../lib/axiomas";
 import generateDatesFromYearBeginning from "../utils/generete-dates-from-year-beginning";
 import HabitDay from "./HabitDay";
 
@@ -7,7 +9,13 @@ const summaryDates = generateDatesFromYearBeginning()
 const minimumSummaryDatesSize = 18 * 7
 const amountOfDaysToFill = minimumSummaryDatesSize - summaryDates.length
 
+
 function SummaryTable() {
+  useEffect(() => {
+    api.get("summary").then(response => {
+      console.log(response.data)
+    })
+  }, [])
 
   return (
     <div className="w-full flex">
