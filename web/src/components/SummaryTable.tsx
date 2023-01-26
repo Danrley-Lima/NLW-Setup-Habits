@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../lib/axiomas";
 import generateDatesFromYearBeginning from "../utils/generete-dates-from-year-beginning";
 import HabitDay from "./HabitDay";
+import dayjs from "dayjs";
 
 const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 const summaryDates = generateDatesFromYearBeginning()
@@ -10,10 +11,20 @@ const minimumSummaryDatesSize = 18 * 7
 const amountOfDaysToFill = minimumSummaryDatesSize - summaryDates.length
 
 
-function SummaryTable() {
+type Summary = Array<{
+  id: string
+  date: string
+  amount: number
+  completed: number
+}>
+
+
+export function SummaryTable() {
+  const [summary, setSummary] = useState<Summary>([])
+
   useEffect(() => {
     api.get("summary").then(response => {
-      console.log(response.data)
+      setSummary(response.data)
     })
   }, [])
 
@@ -35,11 +46,16 @@ function SummaryTable() {
 
       <div className="grid grid-rows-7 grid-flow-col gap-3">
         {summaryDates.map(date => {
+          const dayInSummary = summary.find(day => {
+            return dayjs(date).isSame(day.date, "day")
+          })
+
           return (
             <HabitDay
               key={date.toString()}
-              amount={5}
-              completed={Math.round(Math.random() * 5)}
+              date={date}
+              amount={dayInSummary?.amount}
+              completed={dayInSummary?.completed}
             />
           )
         })}
